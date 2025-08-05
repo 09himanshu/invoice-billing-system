@@ -10,10 +10,10 @@ const envSchema = z.object({
   dialect: z.string(),
   logging: z.string(),
   connectTimeout: z.string(),
-  max: z.string(),
-  min: z.string(),
-  acquire: z.string(),
-  idle: z.string()
+  poolMax: z.string(),
+  poolMin: z.string(),
+  poolAcquire: z.string(),
+  poolIdle: z.string()
 })
 
 const parseEnv = envSchema.safeParse(process.env)
