@@ -1,6 +1,6 @@
 // custom import
 import { db } from '../db/index.db'
-import { FindOptions, CreateOptions, UpdateOptions, DestroyOptions } from 'sequelize'
+import { FindOptions, } from 'sequelize'
 
 type TableName = Exclude<keyof typeof db, 'sequelize'>;
 type TableModel<T extends TableName> = typeof db[T];
@@ -18,7 +18,7 @@ interface FindAll<T extends TableName> {
 
 interface CreateOne<T extends TableName> {
   table: T
-  data: CreateOptions
+  data: object
 }
 
 export const findOne = async <T extends TableName>({ table, query }: FindOne<T>) => {
@@ -44,15 +44,15 @@ export const findAll = async <T extends TableName>({ table, query }: FindAll<T>)
   }
 }
 
-export const createOne = async <T extends TableName> ({ table, data }: CreateOne<T>) =>{
+export const createOne = async <T extends TableName>({ table, data }: CreateOne<T>) => {
   try {
     const model = db[table] as TableModel<T>;
     const result = await db.sequelize.transaction(async (t) => {
-      return await model.create({...data}, {transaction: t})
-    })
-    return result
+      return await model.create({ ...data }, { transaction: t });
+    });
+    return result;
   } catch (err) {
-    console.log(err)
-    throw err
+    console.error(`Error in createOne for table "${table}":`, err);
+    throw err;
   }
-}
+};

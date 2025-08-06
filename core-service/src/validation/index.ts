@@ -1,3 +1,3 @@
-import { userSchema } from "./users.model";
+import { userSchema } from "./users.validation";
 
 export { userSchema };

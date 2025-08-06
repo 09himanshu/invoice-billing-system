@@ -32,7 +32,7 @@ export default (sequelize: Sequelize) => {
       },
       dob: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
       },
       createdAt: {
         type: DataTypes.DATE,

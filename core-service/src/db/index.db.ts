@@ -6,7 +6,6 @@ import User from './user.db'
 
 const sequelize = new Sequelize(env.DB_URL, {
   dialect: env.dialect as Dialect,
-  logging: false
 })
 
 
