@@ -1,28 +1,16 @@
-import { Sequelize } from 'sequelize';
+import { Dialect, Sequelize } from 'sequelize'
 
 // custom import
-import user from './user.db'
-import { env } from '../config/env.config';
-
-
-console.log(env)
+import {env} from '../config/env.config'
+import User from './user.db'
 
 const sequelize = new Sequelize(env.DB_URL, {
-  dialect: env.dialect,
-  logging: env.logging === 'true' ? console.log : false,
-  dialectOptions: {
-    connectTimeout: env.connectTimeout,
-  },
-  pool: {
-    max: Number(env.poolMax),
-    min: Number(env.poolMin),
-    acquire: Number(env.poolAcquire),
-    idle: Number(env.poolIdle)
-  }
-});
+  dialect: env.dialect as Dialect,
+  logging: false
+})
 
-const db = {};
-db.sequelize = sequelize;
-db.User = user(sequelize);
 
-export default db;
+export const db = {
+  sequelize,
+  User: User(sequelize)
+}

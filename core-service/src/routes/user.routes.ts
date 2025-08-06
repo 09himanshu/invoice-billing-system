@@ -1,10 +1,11 @@
-import { Router } from 'express';
-import { registerUser } from '../controller/user.controller';
-import { validate } from '../middleware/userValidate.middleware';
-import { registerUserSchema } from '../schema/user.schema';
+import {Router} from 'express'
 
-const router = Router();
+// custom import
+import * as controller from '../controller/user.controller'
+import * as middleware from '../middleware/userValidate.middleware'
 
-router.post('/register', validate(registerUserSchema), registerUser);
+const router = Router()
 
-export default router;
+router.post('/register', [middleware.validateUser], controller.registerUser)
+
+export default router

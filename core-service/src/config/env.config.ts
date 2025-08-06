@@ -13,7 +13,9 @@ const envSchema = z.object({
   poolMax: z.string(),
   poolMin: z.string(),
   poolAcquire: z.string(),
-  poolIdle: z.string()
+  poolIdle: z.string(),
+  postgres_user: z.string(),
+  postgres_pass: z.string()
 })
 
 const parseEnv = envSchema.safeParse(process.env)

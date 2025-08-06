@@ -1,16 +1,29 @@
 import {Request, Response, NextFunction} from 'express'
 
-// custom import
+// custom imports
+import * as dbService from '../helper/db.helper'
 import * as errors from '../utils/errors.utils'
-import { error } from 'console'
 
-
-export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const registerUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  let body = req.body
   try {
-    const body = req.body
+    let check = await dbService.findOne({
+      table: "User",
+      query: {
+        where: {
+          email: body.email
+        }
+      }
+    })
 
+    if(check) return next(new errors.BadRequest('User already registered'))
     
+    const insert = await dbService.createOne({
+      table: 'User',
+      data: body
+    })
+    res.status(201).send({status: true, data: 'User registered successfully'})
   } catch (err) {
-    
+    console.log(err)
   }
 }

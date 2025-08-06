@@ -6,7 +6,20 @@ import cors from 'cors'
 import {env} from "./config/env.config"
 import {errorMiddleware} from './middleware/error.middleware'
 import {helmetUtils} from './utils/helmet.utils'
-import userRoutes from './routes/user.routes'
+import {db} from './db/index.db'
+
+// imports routes
+import routes from './routes/index'
+
+async function connectDB() {
+  try {
+    await db.sequelize.authenticate()
+    await db.sequelize.sync({alter: false})
+    console.log('Connection has been established successfully.')
+  } catch (err) {
+    console.error('Unable to connect to the database:', err);
+  }
+}
 
 (async (): Promise<void> => {
   const app = express()
@@ -15,6 +28,9 @@ import userRoutes from './routes/user.routes'
     app.use(express.json())
     app.use(cors()) 
 
+    // use master routes
+    app.use('/api/v1', routes)
+
     // Security with Helmet
     if (process.env.NODE_ENV === 'development') {
       app.use(helmet(helmetUtils.development))
@@ -22,8 +38,7 @@ import userRoutes from './routes/user.routes'
       app.use(helmet(helmetUtils.production))
     }
 
-    // API Routes
-    app.use('/api/v1/users', userRoutes);
+    await connectDB()
 
 
     // Error handling middleware should be last
