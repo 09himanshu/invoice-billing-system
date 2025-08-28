@@ -1,8 +1,9 @@
-version: '3.8'
+version: '3.9'
 
 services:
   postgres:
     image: postgres:14
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -14,6 +15,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
+    restart: always
     container_name: pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@gmail.com
@@ -23,5 +25,215 @@ services:
     depends_on:
       - postgres
   
+  controller-1:
+    image: confluentinc/cp-kafka
+    hostname: controller-1
+    container_name: controller-1
+    restart: always
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENERS: 'CONTROLLER://0.0.0.0:9093'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
+      KAFKA_PROCESS_ROLES: 'controller'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - controller-1-data:/var/lib/kafka/data
+
+  controller-2:
+    image: confluentinc/cp-kafka
+    hostname: controller-2
+    container_name: controller-2
+    restart: always
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENERS: 'CONTROLLER://0.0.0.0:9094'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
+      KAFKA_PROCESS_ROLES: 'controller'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - controller-2-data:/var/lib/kafka/data
+      
+  controller-3:
+    image: confluentinc/cp-kafka
+    hostname: controller-3
+    container_name: controller-3
+    restart: always
+    ports:
+      - "9095:9095"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENERS: 'CONTROLLER://0.0.0.0:9095'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
+      KAFKA_PROCESS_ROLES: 'controller'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - controller-3-data:/var/lib/kafka/data
+
+  broker-1:
+    image: confluentinc/cp-kafka
+    hostname: broker-1
+    container_name: broker-1
+    restart: always
+    ports:
+      - "9192:9192"
+    environment:
+      KAFKA_NODE_ID: 4
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9192'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9192'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
+      KAFKA_PROCESS_ROLES: 'broker'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - broker-1-data:/var/lib/kafka/data
+    depends_on:
+      - controller-1
+      - controller-2
+      - controller-3
+
+  broker-2:
+    image: confluentinc/cp-kafka
+    hostname: broker-2
+    container_name: broker-2
+    restart: always
+    ports:
+      - "9193:9193"
+    environment:
+      KAFKA_NODE_ID: 5
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9193'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9193'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
+      KAFKA_PROCESS_ROLES: 'broker'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - broker-2-data:/var/lib/kafka/data
+    depends_on:
+      - controller-1
+      - controller-2
+      - controller-3
+
+  broker-3:
+    image: confluentinc/cp-kafka
+    hostname: broker-3
+    container_name: broker-3
+    restart: always
+    ports:
+      - "9194:9194"
+    environment:
+      KAFKA_NODE_ID: 6
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9194'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9194'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
+      KAFKA_PROCESS_ROLES: 'broker'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - broker-3-data:/var/lib/kafka/data
+    depends_on:
+      - controller-1
+      - controller-2
+      - controller-3
+
+  broker-4:
+    image: confluentinc/cp-kafka
+    hostname: broker-4
+    container_name: broker-4
+    restart: always
+    ports:
+      - "9195:9195"
+    environment:
+      KAFKA_NODE_ID: 7
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9195'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9195'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
+      KAFKA_PROCESS_ROLES: 'broker'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - broker-4-data:/var/lib/kafka/data
+    depends_on:
+      - controller-1
+      - controller-2
+      - controller-3
+
+  broker-5:
+    image: confluentinc/cp-kafka
+    hostname: broker-5
+    container_name: broker-5
+    restart: always
+    ports:
+      - "9196:9196"
+    environment:
+      KAFKA_NODE_ID: 8
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9196'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9196'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
+      KAFKA_PROCESS_ROLES: 'broker'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    volumes:
+      - broker-5-data:/var/lib/kafka/data
+    depends_on:
+      - controller-1
+      - controller-2
+      - controller-3
+      
 volumes:
   pgdata:
+  controller-1-data:
+  controller-2-data:
+  controller-3-data:
+  broker-1-data:
+  broker-2-data:
+  broker-3-data:
+  broker-4-data:
+  broker-5-data:
