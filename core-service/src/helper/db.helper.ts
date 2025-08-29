@@ -1,6 +1,6 @@
+import { FindOptions, } from 'sequelize'
 // custom import
 import { db } from '../db/index.db'
-import { FindOptions, } from 'sequelize'
 
 type TableName = Exclude<keyof typeof db, 'sequelize'>;
 type TableModel<T extends TableName> = typeof db[T];
