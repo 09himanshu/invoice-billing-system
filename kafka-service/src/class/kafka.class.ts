@@ -6,7 +6,7 @@ export class KafkaService {
     private kafka: Kafka
 
     // Private constructor to prevent direct instantiation
-    private constructor() {
+    public constructor() {
         this.kafka = new Kafka({
             clientId: env.clientId,
             brokers: env.brokers.split(',')

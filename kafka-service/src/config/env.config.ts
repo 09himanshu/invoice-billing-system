@@ -7,8 +7,9 @@ const envSchema = z.object({
   clientId: z.string(),
   brokers: z.string(),
   topics: z.string(),
-  DB_URL: z.string().url(),
+  DB_URL: z.string(),
   dialect: z.string(),
+  kafka_group_id_1: z.string()
 })
 
 const parseEnv = envSchema.safeParse(process.env)
