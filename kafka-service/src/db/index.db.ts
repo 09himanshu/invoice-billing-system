@@ -1,0 +1,15 @@
+import {Sequelize, Dialect} from 'sequelize'
+
+// custom import
+import {env} from '../config/env.config'
+import users from './user.db'
+
+const sequelize = new Sequelize(env.DB_URL, {
+  dialect: env.dialect as Dialect
+})
+
+
+export const db = {
+  sequelize,
+  users: users(sequelize)
+}
