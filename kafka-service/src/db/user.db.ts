@@ -39,5 +39,9 @@ export default (sequelize: Sequelize) => {
       type: DataTypes.DATE,
       allowNull: false,
     }
+  },{
+      modelName: 'User',
+      tableName: 'users',
+      timestamps: true,
   })
 }

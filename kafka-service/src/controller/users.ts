@@ -1,30 +1,46 @@
 import {KafkaService} from '../class/kafka.class'
 import {env} from '../config/env.config'
 import * as dbService from '../helpers/db.helper'
+import {tableNames} from '../utils/constant.utils'
 
 const kafka = new KafkaService()
 
-export const insertUser = async () => {
-    let consumer = await kafka.consumeMessages(env.kafka_group_id_1)
-    let bulkInsert: object[] = []
+
+export const insertUser = async (): Promise<void> => {
+  let consumer =  await kafka.consumeMessages(env.kafka_group_id_1)
+  
   try {
-    consumer?.subscribe({topics: [env.topics], fromBeginning: true})
+    consumer?.subscribe({topic: env.topics,fromBeginning: true})
 
     await consumer?.run({
-        eachMessage: async ({topic, partition, message, heartbeat, pause}) => {
-            if(/user-/.test(message.key!.toString())) {
-                const user = JSON.parse(message.value!.toString())
+      eachBatch: async ({batch, resolveOffset, heartbeat}) => {
+        let users: object[] = []
 
-                bulkInsert.push(user)
+        for(let ele of batch.messages) {
+          if(/users-/.test(ele.key!.toString())) {
+            users.push(JSON.parse(ele.value!.toString()))
+          }
 
-                if(bulkInsert.length >= 100) {
-                    await dbService.createMany(bulkInsert)
-                    bulkInsert = []
-                }
-            }
+          resolveOffset(ele.offset)
+
+          await heartbeat()
         }
+
+        if(users.length > 0) {
+          await dbService.createMany({ table: tableNames.user, data: users })
+        }
+      }
     })
   } catch (err) {
-    console.error('Error inserting user:', err)
+    console.error(err)
+  }
+}
+
+
+export const genBill = async () => {
+  try {
+    
+  } catch (err) {
+    console.error(err)
   }
 }
