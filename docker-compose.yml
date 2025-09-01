@@ -1,6 +1,7 @@
 version: '3.9'
 
 services:
+
   postgres:
     image: postgres:14
     restart: always
@@ -226,7 +227,38 @@ services:
       - controller-1
       - controller-2
       - controller-3
-      
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    restart: always
+    environment:
+      - RI_REDIS_USERNAME: redis
+      - RI_REDIS_PASSWORD: redis
+    volumes:
+      - redisinsight: /data
+
+  core-service:
+    container_name: service-1
+    hostname: service-1
+    build:
+      context: ./core-service
+      dockerfile: Dockerfile
+    restart: always
+    ports: 
+      - "5002:5002"
+    depends_on:
+      - postgres
+      - broker-1
+      - broker-2
+      - broker-3
+      - broker-4
+      - broker-5
+      - redis
+
 volumes:
   pgdata:
   controller-1-data:
@@ -237,3 +269,4 @@ volumes:
   broker-3-data:
   broker-4-data:
   broker-5-data:
+  redisinsight:
