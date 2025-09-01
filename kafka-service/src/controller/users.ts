@@ -1,10 +1,12 @@
+
+
+// custom imports
 import {KafkaService} from '../class/kafka.class'
 import {env} from '../config/env.config'
 import * as dbService from '../helpers/db.helper'
 import {tableNames} from '../utils/constant.utils'
 
-const kafka = new KafkaService()
-
+const kafka = KafkaService.getInstance()
 
 export const insertUser = async (): Promise<void> => {
   let consumer =  await kafka.consumeMessages(env.kafka_group_id_1)
@@ -38,8 +40,24 @@ export const insertUser = async (): Promise<void> => {
 
 
 export const genBill = async () => {
+  const consumer = await kafka.consumeMessages(env.kafka_group_id_2)
   try {
-    
+    consumer?.subscribe({topic: env.topics, fromBeginning: true})
+
+    await consumer?.run({
+      eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
+        for (let ele of batch.messages) {
+          if(/bill-/.test(ele.key!.toString())) {
+            let {userId, amount} = JSON.parse(ele.value!.toString())
+            
+          }
+
+
+          resolveOffset(ele.offset)
+          await heartbeat()
+        }
+      }
+    })
   } catch (err) {
     console.error(err)
   }
