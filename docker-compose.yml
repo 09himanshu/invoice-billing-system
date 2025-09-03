@@ -236,28 +236,26 @@ services:
       - "6379:6379"
     restart: always
     environment:
-      - RI_REDIS_USERNAME: redis
-      - RI_REDIS_PASSWORD: redis
+      RI_REDIS_USERNAME: redis
+      RI_REDIS_PASSWORD: redis
     volumes:
-      - redisinsight: /data
+      - redisinsight:/data
 
-  core-service:
-    container_name: service-1
-    hostname: service-1
-    build:
-      context: ./core-service
-      dockerfile: Dockerfile
-    restart: always
-    ports: 
-      - "5002:5002"
-    depends_on:
-      - postgres
-      - broker-1
-      - broker-2
-      - broker-3
-      - broker-4
-      - broker-5
-      - redis
+  # core-service:
+  #   container_name: service-1
+  #   hostname: service-1
+  #   build: "./core-service"
+  #   restart: always
+  #   ports: 
+  #     - "5002:5002"
+  #   depends_on:
+  #     - postgres
+  #     - broker-1
+  #     - broker-2
+  #     - broker-3
+  #     - broker-4
+  #     - broker-5
+  #     - redis
 
 volumes:
   pgdata:

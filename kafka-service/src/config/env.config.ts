@@ -4,11 +4,11 @@ import {z} from 'zod'
 config()
 
 const envSchema = z.object({
+  DB_URL: z.string(),
+  dialect: z.string(),
   clientId: z.string(),
   brokers: z.string(),
   topics: z.string(),
-  DB_URL: z.string(),
-  dialect: z.string(),
   kafka_group_id_1: z.string(),
   kafka_group_id_2: z.string(),
   redisPort: z.string(),
