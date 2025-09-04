@@ -51,11 +51,24 @@ export const genBill = async () => {
           if(/bill-/.test(ele.key!.toString())) {
             let {userId, bill} = JSON.parse(ele.value!.toString())
 
-            const user = await redis.get(userId)
+            let user: any = await redis.get(userId)
 
             if(!user) {
-              
+              user = await dbService.findOne({
+                table: tableNames.user,
+                query: {
+                  where: {
+                    email: userId
+                  }
+                }
+              })
+            } else {
+              user = JSON.parse(user)
             }
+
+            
+
+
           }
           resolveOffset(ele.offset)
           await heartbeat()

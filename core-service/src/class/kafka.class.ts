@@ -62,6 +62,7 @@ export class KafkaService {
             return consumer
         } catch (err) {
             console.error('Error connecting consumer:', err)
+            return undefined
         }
     }
 
@@ -76,6 +77,7 @@ export class KafkaService {
             return producer
         } catch (err) {
             console.error('Error connecting producer:', err)
+            return undefined
         }
     }
 }
