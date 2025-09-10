@@ -39,20 +39,33 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
       topic: env.topics,
       messages: [
         {
-          key: `users-${body.email}`,
+          key: `usersid-${body.email}`,
           value: JSON.stringify(body)
         }
       ]
     })
     
-    // const insert = await dbService.createOne({
-    //   table: 'User',
-    //   data: body
-    // })
-
-    // console.log(insert)
     res.status(201).send({status: true, data: 'User registered successfully'})
   } catch (err) {
-    console.log(err)
+    return next(new errors.InternalServer('Something went wrong'))
+  }
+}
+
+export const userBill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const body = req.body
+  try {
+    const producer = await kafka.produceMessages()
+
+    await producer?.send({
+      topic: env.topics,
+      messages: [
+        {
+          key: `bill-${body.email}`,
+          value: JSON.stringify(body)
+        }
+      ]
+    })
+  } catch (err) {
+    return next(new errors.InternalServer('Something went wrong'))
   }
 }
