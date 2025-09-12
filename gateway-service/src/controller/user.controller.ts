@@ -6,6 +6,7 @@ import {RedisService} from '../class/redis.class'
 import * as dbService from '../helper/db.helper'
 import * as errors from '../utils/errors.utils'
 import * as constants from '../utils/constants.utils'
+import {generateOrderId} from '../helper/uniqueId.helper'
 import {env} from '../config/env.config'
 
 const kafka = KafkaService.getInstance()
@@ -39,7 +40,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
       topic: env.topics,
       messages: [
         {
-          key: `usersid-${body.email}`,
+          key: `userID-${body.email}`,
           value: JSON.stringify(body)
         }
       ]
@@ -53,6 +54,8 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 
 export const userBill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const body = req.body
+  if(!body) return next(new errors.BadRequest('Invalid request'))
+
   try {
     const producer = await kafka.produceMessages()
 
@@ -60,7 +63,7 @@ export const userBill = async (req: Request, res: Response, next: NextFunction):
       topic: env.topics,
       messages: [
         {
-          key: `bill-${body.email}`,
+          key: `billID-${generateOrderId()}`,
           value: JSON.stringify(body)
         }
       ]

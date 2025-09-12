@@ -21,7 +21,7 @@ export const insertUser = async (): Promise<void> => {
         let users: object[] = []
 
         for(let ele of batch.messages) {
-          if(/users-/.test(ele.key!.toString())) {
+          if(/userID-/.test(ele.key!.toString())) {
             users.push(JSON.parse(ele.value!.toString()))
           }
 
@@ -48,8 +48,8 @@ export const genBill = async () => {
     await consumer?.run({
       eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
         for (let ele of batch.messages) {
-          if(/bill-/.test(ele.key!.toString())) {
-            let {userId, bill} = JSON.parse(ele.value!.toString())
+          if(/billID-/.test(ele.key!.toString())) {
+            let {userId, items} = JSON.parse(ele.value!.toString())
 
             let user: any = await redis.get(userId)
 
@@ -67,7 +67,7 @@ export const genBill = async () => {
             }
 
             
-
+            
 
           }
           resolveOffset(ele.offset)
