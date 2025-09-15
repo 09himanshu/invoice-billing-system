@@ -26,6 +26,7 @@ export const findOne = async <T extends TableName>({ table, query }: FindOne<T>)
   try {
     const model = db[table] as TableModel<T>;
     const result = await model.findOne(query);
+    
     return result;
   } catch (err) {
     console.error(`Error in findOne for table "${table}":`, err);

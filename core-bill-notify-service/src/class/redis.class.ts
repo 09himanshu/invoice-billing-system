@@ -11,8 +11,8 @@ export class RedisService {
     const options: RedisOptions = {
       host: env.redisHost,
       port: Number(env.redisPort),
-      password: env.redisPassword,
-      username: env.redisUsername,
+      // password: env.redisPassword,
+      // username: env.redisUsername,
       retryStrategy(times) {
         return Math.min(times * 50, 2000);
       },

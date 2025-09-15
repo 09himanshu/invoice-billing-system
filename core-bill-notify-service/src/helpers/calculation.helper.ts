@@ -1,14 +1,11 @@
 interface Item {
-  productId: string,
-  quantity: number,
+  productId: string
+  quantity: number
   price: number
+  productName: string
+
 }
 
-export const calculateTotal = (items: Item[]): number => {
-  try {
-    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
-    return total
-  } catch (err) {
-    return 0
-  }
+export const calculateTotalPrice = async (items: Item[]) => {
+  return items.reduce((total, item) => {return total + (item.quantity * item.price)}, 0)
 }

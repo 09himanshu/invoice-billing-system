@@ -94,7 +94,7 @@ services:
       KAFKA_NODE_ID: 4
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9192'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9192'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://192.168.1.9:9192'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
@@ -123,7 +123,7 @@ services:
       KAFKA_NODE_ID: 5
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9193'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9193'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://192.168.1.9:9193'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
@@ -152,7 +152,7 @@ services:
       KAFKA_NODE_ID: 6
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9194'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9194'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://192.168.1.9:9194'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
@@ -181,7 +181,7 @@ services:
       KAFKA_NODE_ID: 7
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9195'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9195'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://192.168.1.9:9195'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
@@ -210,7 +210,7 @@ services:
       KAFKA_NODE_ID: 8
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9196'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://10.6.4.120:9196'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://192.168.1.9:9196'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@controller-1:9093,2@controller-2:9094,3@controller-3:9095'
@@ -235,43 +235,43 @@ services:
     ports:
       - "6379:6379"
     restart: always
-    environment:
-      RI_REDIS_USERNAME: redis
-      RI_REDIS_PASSWORD: redis
+    # environment:
+    #   RI_REDIS_USERNAME: redis
+    #   RI_REDIS_PASSWORD: redis
     volumes:
       - redisinsight:/data
 
-  core-service:
-    container_name: service-1
-    hostname: service-1
-    build: "./core-service"
-    # restart: always
-    ports: 
-      - "5002:5002"
-    environment:
-      DB_URL: postgres://postgres:password@localhost:5432/invoiceBill
-      dialect: postgres
-      PORT: 5002
-      HOST: 0.0.0.0
-      postgres_user: postgres
-      postgres_pass: password
-      clientId: invoice
-      brokers: 192.168.1.9:9192,192.168.1.9:9193,192.168.1.9:9194,192.168.1.9:9195,192.168.1.9:9196
-      topics: invoice_topic
-      kafka_group_id_1: invoiceUserGroup
-      kafka_group_id_2: invoiceBillGroup
-      redisPort: 6379
-      redisUsername: redis
-      redisPassword: redis
-      redisHost: 0.0.0.0
-    depends_on:
-      - postgres
-      - redis
-      - broker-1
-      - broker-2
-      - broker-3
-      - broker-4
-      - broker-5
+  # core-service:
+  #   container_name: service-1
+  #   hostname: service-1
+  #   build: "./core-service"
+  #   # restart: always
+  #   ports: 
+  #     - "5002:5002"
+  #   environment:
+  #     DB_URL: postgres://postgres:password@localhost:5432/invoiceBill
+  #     dialect: postgres
+  #     PORT: 5002
+  #     HOST: 0.0.0.0
+  #     postgres_user: postgres
+  #     postgres_pass: password
+  #     clientId: invoice
+  #     brokers: 192.168.1.9:9192,192.168.1.9:9193,192.168.1.9:9194,192.168.1.9:9195,192.168.1.9:9196
+  #     topics: invoice_topic
+  #     kafka_group_id_1: invoiceUserGroup
+  #     kafka_group_id_2: invoiceBillGroup
+  #     redisPort: 6379
+  #     redisUsername: redis
+  #     redisPassword: redis
+  #     redisHost: 0.0.0.0
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     - broker-1
+  #     - broker-2
+  #     - broker-3
+  #     - broker-4
+  #     - broker-5
 
 volumes:
   pgdata:

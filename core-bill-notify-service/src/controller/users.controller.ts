@@ -1,27 +1,25 @@
 
-
 // custom imports
-import {KafkaService} from '../class/kafka.class'
-import {RedisService} from '../class/redis.class'
-import {env} from '../config/env.config'
+import { KafkaService } from '../class/kafka.class'
+import { env } from '../config/env.config'
+import { tableNames } from '../utils/constant.utils'
 import * as dbService from '../helpers/db.helper'
-import {tableNames} from '../utils/constant.utils'
+
 
 const kafka = KafkaService.getInstance()
-const redis = RedisService.getInstance()
 
 export const insertUser = async (): Promise<void> => {
-  let consumer =  await kafka.consumeMessages(env.kafka_group_id_1)
-  
+  let consumer = await kafka.consumeMessages(env.kafka_group_id_1)
+
   try {
-    consumer?.subscribe({topic: env.topics,fromBeginning: true})
+    consumer?.subscribe({ topic: env.topics, fromBeginning: true })
 
     await consumer?.run({
-      eachBatch: async ({batch, resolveOffset, heartbeat}) => {
+      eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
         let users: object[] = []
 
-        for(let ele of batch.messages) {
-          if(/userID-/.test(ele.key!.toString())) {
+        for (let ele of batch.messages) {
+          if (/userID-/.test(ele.key!.toString())) {
             users.push(JSON.parse(ele.value!.toString()))
           }
 
@@ -30,48 +28,8 @@ export const insertUser = async (): Promise<void> => {
           await heartbeat()
         }
 
-        if(users.length > 0) {
+        if (users.length > 0) {
           await dbService.createMany({ table: tableNames.user, data: users })
-        }
-      }
-    })
-  } catch (err) {
-    console.error(err)
-  }
-}
-
-export const genBill = async () => {
-  const consumer = await kafka.consumeMessages(env.kafka_group_id_2)
-  try {
-    consumer?.subscribe({topic: env.topics, fromBeginning: true})
-
-    await consumer?.run({
-      eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
-        for (let ele of batch.messages) {
-          if(/billID-/.test(ele.key!.toString())) {
-            let {userId, items} = JSON.parse(ele.value!.toString())
-
-            let user: any = await redis.get(userId)
-
-            if(!user) {
-              user = await dbService.findOne({
-                table: tableNames.user,
-                query: {
-                  where: {
-                    email: userId
-                  }
-                }
-              })
-            } else {
-              user = JSON.parse(user)
-            }
-
-            
-            
-
-          }
-          resolveOffset(ele.offset)
-          await heartbeat()
         }
       }
     })

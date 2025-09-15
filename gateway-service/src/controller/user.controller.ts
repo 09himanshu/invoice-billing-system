@@ -41,33 +41,13 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
       messages: [
         {
           key: `userID-${body.email}`,
-          value: JSON.stringify(body)
+          value: JSON.stringify(body),
+          partition: 0
         }
       ]
     })
     
     res.status(201).send({status: true, data: 'User registered successfully'})
-  } catch (err) {
-    return next(new errors.InternalServer('Something went wrong'))
-  }
-}
-
-export const userBill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const body = req.body
-  if(!body) return next(new errors.BadRequest('Invalid request'))
-
-  try {
-    const producer = await kafka.produceMessages()
-
-    await producer?.send({
-      topic: env.topics,
-      messages: [
-        {
-          key: `billID-${generateOrderId()}`,
-          value: JSON.stringify(body)
-        }
-      ]
-    })
   } catch (err) {
     return next(new errors.InternalServer('Something went wrong'))
   }

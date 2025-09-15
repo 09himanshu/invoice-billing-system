@@ -7,9 +7,13 @@ import { env } from "./config/env.config";
 import { errorMiddleware } from "./middleware/error.middleware";
 import { helmetUtils } from "./utils/helmet.utils";
 import { db } from "./db/index.db";
+import {KafkaService} from './class/kafka.class'
 
 // imports routes
 import routes from "./routes/index";
+
+// Kafka object
+const kafka = KafkaService.getInstance()
 
 async function connectDB() {
   try {
@@ -62,6 +66,9 @@ async function connectDB() {
 
     // Error handling middleware should be last
     app.use(errorMiddleware);
+
+    // Kafka topic creation
+    await kafka.createTopics(env.topics)
 
     const PORT = Number(env.PORT);
     const HOST = String(env.HOST);
