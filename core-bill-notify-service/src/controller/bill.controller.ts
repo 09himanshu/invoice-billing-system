@@ -15,9 +15,9 @@ const redis = RedisService.getInstance()
 const kafka = KafkaService.getInstance()
 const filepath = path.join(__dirname, '../../bills/')
 
-const producer = await kafka.produceMessages()
 
 export const genBill = async (): Promise<void> => {
+  const producer = await kafka.produceMessages()
   const consumer = await kafka.consumeMessages(env.kafka_group_id_2)
   try {
     consumer?.subscribe({ topic: env.topics, fromBeginning: true })
@@ -173,10 +173,25 @@ export const genBill = async (): Promise<void> => {
             
             doc.end()
 
+            const notify: object = {
+              filepath: `${filepath}${ele.key!.toString().split('-')[1]}.pdf`,
+              info: {
+                name: user.fullName,
+                sendTo: user.email,
+                totalAmount: (totalPrice + gstAmount).toFixed(2),
+                invoiceID: `${ele.key!.toString().split('-')[1]}`,
+                storeName: 'MAX Stores'
+              }
+            }
+
             await producer?.send({
               topic: env.topics,
               messages: [
-                
+                {
+                  key: `email-${ele.key?.toString()}`,
+                  value: JSON.stringify(notify),
+                  partition: 2
+                }
               ]
             })
           }
