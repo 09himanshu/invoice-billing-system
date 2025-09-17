@@ -11,10 +11,16 @@ const envSchema = z.object({
   topics: z.string(),
   kafka_group_id_1: z.string(),
   kafka_group_id_2: z.string(),
+  kafka_group_id_3: z.string(),
   redisPort: z.string(),
   redisUsername: z.string(),
   redisPassword: z.string(),
-  redisHost: z.string() 
+  redisHost: z.string(),
+  smtpHost: z.string(),
+  smtpPort: z.string(),
+  smtpUser: z.string(),
+  smtpPassword: z.string(),
+  smtpFrom: z.string()
 })
 
 const parseEnv = envSchema.safeParse(process.env)
