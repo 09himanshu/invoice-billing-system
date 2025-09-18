@@ -3,7 +3,7 @@
 import { KafkaService } from '../class/kafka.class'
 import { env } from '../config/env.config'
 import { tableNames } from '../utils/constant.utils'
-import * as dbService from '../helpers/db.helper'
+import {db} from '../helpers/db.helper'
 
 
 const kafka = KafkaService.getInstance()
@@ -29,7 +29,7 @@ export const insertUser = async (): Promise<void> => {
         }
 
         if (users.length > 0) {
-          await dbService.createMany({ table: tableNames.user, data: users })
+          (await db).insertMany({collection: tableNames.user, document: users})
         }
       }
     })

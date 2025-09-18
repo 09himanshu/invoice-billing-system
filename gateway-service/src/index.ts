@@ -13,17 +13,9 @@ import {KafkaService} from './class/kafka.class'
 import routes from "./routes/index";
 
 // Kafka object
-const kafka = KafkaService.getInstance()
+const kafka = KafkaService.getInstance();
 
-async function connectDB() {
-  try {
-    await db.sequelize.authenticate();
-    await db.sequelize.sync({ alter: false });
-    console.log("Connection has been established successfully.");
-  } catch (err) {
-    console.error("Unable to connect to the database:", err);
-  }
-}
+
 
 (async (): Promise<void> => {
   const app = express();
@@ -61,8 +53,6 @@ async function connectDB() {
       app.use(helmet(helmetUtils.production));
     }
 
-    // Connect DB
-    await connectDB();
 
     // Error handling middleware should be last
     app.use(errorMiddleware);

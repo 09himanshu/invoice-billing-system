@@ -1,11 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 import pdfKit from 'pdfkit'
-import {Op} from 'sequelize'
+
 // custom imports
 import * as helper from '../helpers/calculation.helper'
 import * as constant from '../utils/constant.utils'
-import * as dbService from '../helpers/db.helper'
+import {db} from '../helpers/db.helper'
 import { env } from '../config/env.config'
 import { RedisService } from '../class/redis.class'
 import { KafkaService } from '../class/kafka.class'
@@ -30,10 +30,8 @@ export const genBill = async (): Promise<void> => {
 
             let user: any = await redis.get(userId)
             if (!user) {
-              user = await dbService.findOne({
-                table: tableNames.user,
-                query: { where: { mobile: '8420400540'} }
-              })
+              
+              user = (await db).findOne({collection: tableNames.user, filter: {email: userId}, project: {}})
             } else {
               user = JSON.parse(user)
             }
