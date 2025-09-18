@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import pdfKit from 'pdfkit'
-
+import {Op} from 'sequelize'
 // custom imports
 import * as helper from '../helpers/calculation.helper'
 import * as constant from '../utils/constant.utils'
@@ -29,17 +29,22 @@ export const genBill = async (): Promise<void> => {
             let { userId, items } = JSON.parse(ele.value!.toString())
 
             let user: any = await redis.get(userId)
-            if (user == 'null') {
+            if (!user) {
               user = await dbService.findOne({
                 table: tableNames.user,
-                query: { where: { email: userId } }
+                query: { where: { mobile: '8420400540'} }
               })
             } else {
               user = JSON.parse(user)
             }
 
+            console.log(user, userId)
+            return
+
             const totalPrice = await helper.calculateTotalPrice(items)
             const gstAmount = (totalPrice * 18) / 100
+
+            if(!Object.keys(user).length) return
 
             let fullName = ''
             if (user.firstname) fullName += user.firstname + ' '

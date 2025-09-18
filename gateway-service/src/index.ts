@@ -6,7 +6,7 @@ import cors from "cors";
 import { env } from "./config/env.config";
 import { errorMiddleware } from "./middleware/error.middleware";
 import { helmetUtils } from "./utils/helmet.utils";
-import { db } from "./db/index.db";
+// import { db } from "./db/index.db";
 import {KafkaService} from './class/kafka.class'
 
 // imports routes

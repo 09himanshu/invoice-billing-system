@@ -5,6 +5,7 @@ config()
 
 const envSchema = z.object({
   DB_URL: z.string(),
+  dbName: z.string(),
   dialect: z.string(),
   clientId: z.string(),
   brokers: z.string(),

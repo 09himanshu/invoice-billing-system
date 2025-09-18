@@ -1,4 +1,3 @@
-import { create } from 'domain'
 import {Sequelize, DataTypes} from 'sequelize'
 
 export default (sequelize: Sequelize) => {

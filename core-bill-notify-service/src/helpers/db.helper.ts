@@ -25,7 +25,7 @@ interface CreateMany<T extends TableName> {
 export const findOne = async <T extends TableName>({ table, query }: FindOne<T>) => {
   try {
     const model = db[table] as TableModel<T>;
-    const result = await model.findOne(query);
+    const result = await model.findOne({...query})
     
     return result;
   } catch (err) {

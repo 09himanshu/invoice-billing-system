@@ -5,7 +5,7 @@ config()
 
 const envSchema = z.object({
   DB_URL: z.string(),
-  dialect: z.string(),
+  dbName: z.string(),
   HOST: z.string().default("0.0.0.0"),
   PORT: z.string().default("8080"),
   postgres_user: z.string(),

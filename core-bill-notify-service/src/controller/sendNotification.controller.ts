@@ -17,13 +17,15 @@ export const sendMail = async () => {
             if(/email-/.test(ele.key!.toString())) {
               let data = JSON.parse(ele.value!.toString())
               
-              await mailer.sendMail({
+              let info = await mailer.sendMail({
                 from: env.smtpFrom,
                 to: data.sendTo,
                 subject: 'Invoice',
                 html: await template(data.info),
                 document: data.filepath
               })
+
+              console.log(info)
             }
 
             resolveOffset(ele.offset)
