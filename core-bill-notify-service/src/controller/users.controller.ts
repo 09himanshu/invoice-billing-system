@@ -19,6 +19,11 @@ export const insertUser = async (): Promise<void> => {
 
         for (let ele of batch.messages) {
           if (/userID-/.test(ele.key!.toString())) {
+            if(users.length >= 1000) {
+              console.log(`Inserted ${users.length} users into the database`);
+              (await db).insertMany({collection: tableNames.user, document: users})
+              users = []
+            }
             users.push(JSON.parse(ele.value!.toString()))
           }
 
@@ -28,6 +33,7 @@ export const insertUser = async (): Promise<void> => {
         }
 
         if (users.length > 0) {
+          console.log(`Inserted ${users.length} users into the database`);
           (await db).insertMany({collection: tableNames.user, document: users})
         }
       }

@@ -58,6 +58,7 @@ class DB {
         deprecationErrors: true,
       }
     })
+    this.connection()
   }
 
   public static async getInstance(): Promise<DB> {

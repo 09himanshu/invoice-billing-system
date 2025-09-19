@@ -6,8 +6,6 @@ import * as constants from '../utils/constants.utils'
 import {db} from '../helper/db.helper'
 import {KafkaService} from '../class/kafka.class'
 import {RedisService} from '../class/redis.class'
-import {generateOrderId} from '../helper/uniqueId.helper'
-import {env} from '../config/env.config'
 import {kafkaTopics} from '../utils/constants.utils'
 
 const kafka = KafkaService.getInstance()
@@ -22,32 +20,24 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 
     if(!data) {
       data = (await db).findOne({collection: constants.tableNames.user, filter: {email: body.email}, project: {}})
+      console.log(data);
+      
       await redis.set(body.email, JSON.stringify(data), 172800) // 2 days
       if(data) return next(new errors.BadRequest('User already registered'))
     } else {
+      console.log(data);
       return next(new errors.BadRequest('User already registered'))
     }
-
-    // const producer = await kafka.produceMessages(kafkaTopics.register)
-
-    // await producer?.send({
-    //   topic: env.topics,
-    //   messages: [
-    //     {
-    //       key: `userID-${body.email}`,
-    //       value: JSON.stringify(body),
-    //       partition: 0
-    //     }
-    //   ]
-    // })
 
     const message = [
       {
         key: `userID-${body.email}`,
+        value: body,
+        partition: 0
       }
     ]
 
-    await kafka.sendMessage(kafkaTopics.register, )
+    await kafka.sendMessage(kafkaTopics.register, message)
     
     res.status(201).send({status: true, data: 'User registered successfully'})
   } catch (err) {

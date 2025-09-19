@@ -14,18 +14,16 @@ export const userBill = async (req: Request, res: Response, next: NextFunction):
   if(!body) return next(new errors.BadRequest('Invalid request'))
 
   try {
-    const producer = await kafka.produceMessages(kafkaTopics.bill)
 
-    await producer?.send({
-      topic: env.topics,
-      messages: [
-        {
-          key: `billID-${generateOrderId()}`,
-          value: JSON.stringify(body),
-          partition: 1
-        }
-      ]
-    })
+    const message = [
+      {
+        key: `billID-${generateOrderId()}`,
+        value: JSON.stringify(body),
+        partition: 1
+      }
+    ]
+
+    await kafka.sendMessage(kafkaTopics.bill, message)
 
     res.status(200).send({status: true, data: 'Bill generated successfully'})
   } catch (err) {
