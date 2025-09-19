@@ -4,16 +4,15 @@ import { KafkaService } from '../class/kafka.class'
 import { env } from '../config/env.config'
 import { tableNames } from '../utils/constant.utils'
 import {db} from '../helpers/db.helper'
+import {kafkaTopics, kafkaGroupIDs} from '../utils/constant.utils'
 
 
 const kafka = KafkaService.getInstance()
 
 export const insertUser = async (): Promise<void> => {
-  let consumer = await kafka.consumeMessages(env.kafka_group_id_1)
+  let consumer = await kafka.getConsumer(kafkaGroupIDs.insertion, kafkaTopics.register)
 
   try {
-    consumer?.subscribe({ topic: env.topics, fromBeginning: true })
-
     await consumer?.run({
       eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
         let users: object[] = []

@@ -105,4 +105,21 @@ export const storeAddresses = [
   }
 ];
 
+export const kafkaTopics = {
+    'register': 'register',
+    'bill': 'bill',
+    'notify': 'notify'
+}
 
+export const kafkaGroupIDs = {
+  'insertion': 'insertion',
+  'billing': 'billing',
+  'notification': 'notification'
+}
+
+export const kafkaKeys = {
+  'userID': 'userID',
+  'billID': 'billID',
+  'notify': 'notify'
+
+}

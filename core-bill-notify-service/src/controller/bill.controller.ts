@@ -10,6 +10,7 @@ import { env } from '../config/env.config'
 import { RedisService } from '../class/redis.class'
 import { KafkaService } from '../class/kafka.class'
 import { tableNames } from '../utils/constant.utils'
+import {kafkaTopics, kafkaGroupIDs} from '../utils/constant.utils'
 
 const redis = RedisService.getInstance()
 const kafka = KafkaService.getInstance()
@@ -17,10 +18,9 @@ const filepath = path.join(__dirname, '../../bills/')
 
 
 export const genBill = async (): Promise<void> => {
-  const producer = await kafka.produceMessages()
-  const consumer = await kafka.consumeMessages(env.kafka_group_id_2)
+  const consumer = await kafka.getConsumer(kafkaGroupIDs.billing, kafkaTopics.bill)
   try {
-    consumer?.subscribe({ topic: env.topics, fromBeginning: true })
+    consumer?.subscribe({ topic: kafkaTopics.bill, fromBeginning: true })
 
     await consumer?.run({
       eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
@@ -187,16 +187,16 @@ export const genBill = async (): Promise<void> => {
               }
             }
 
-            await producer?.send({
-              topic: env.topics,
-              messages: [
-                {
-                  key: `email-${ele.key?.toString()}`,
-                  value: JSON.stringify(notify),
-                  partition: 2
-                }
-              ]
-            })
+            // await producer?.send({
+            //   topic: kafkaTopics.notify,
+            //   messages: [
+            //     {
+            //       key: `email-${ele.key?.toString()}`,
+            //       value: JSON.stringify(notify),
+            //       partition: 2
+            //     }
+            //   ]
+            // })
           }
 
           resolveOffset(ele.offset)

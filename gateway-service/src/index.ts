@@ -6,8 +6,8 @@ import cors from "cors";
 import { env } from "./config/env.config";
 import { errorMiddleware } from "./middleware/error.middleware";
 import { helmetUtils } from "./utils/helmet.utils";
-// import { db } from "./db/index.db";
 import {KafkaService} from './class/kafka.class'
+import {kafkaTopics} from './utils/constants.utils'
 
 // imports routes
 import routes from "./routes/index";
@@ -58,7 +58,7 @@ const kafka = KafkaService.getInstance();
     app.use(errorMiddleware);
 
     // Kafka topic creation
-    await kafka.createTopics(env.topics)
+    await kafka.createTopics(Object.values(kafkaTopics))
 
     const PORT = Number(env.PORT);
     const HOST = String(env.HOST);

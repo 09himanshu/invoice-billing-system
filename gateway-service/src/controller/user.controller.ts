@@ -8,7 +8,7 @@ import {KafkaService} from '../class/kafka.class'
 import {RedisService} from '../class/redis.class'
 import {generateOrderId} from '../helper/uniqueId.helper'
 import {env} from '../config/env.config'
-import { email } from 'zod'
+import {kafkaTopics} from '../utils/constants.utils'
 
 const kafka = KafkaService.getInstance()
 const redis = RedisService.getInstance()
@@ -28,18 +28,26 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
       return next(new errors.BadRequest('User already registered'))
     }
 
-    const producer = await kafka.produceMessages()
+    // const producer = await kafka.produceMessages(kafkaTopics.register)
 
-    await producer?.send({
-      topic: env.topics,
-      messages: [
-        {
-          key: `userID-${body.email}`,
-          value: JSON.stringify(body),
-          partition: 0
-        }
-      ]
-    })
+    // await producer?.send({
+    //   topic: env.topics,
+    //   messages: [
+    //     {
+    //       key: `userID-${body.email}`,
+    //       value: JSON.stringify(body),
+    //       partition: 0
+    //     }
+    //   ]
+    // })
+
+    const message = [
+      {
+        key: `userID-${body.email}`,
+      }
+    ]
+
+    await kafka.sendMessage(kafkaTopics.register, )
     
     res.status(201).send({status: true, data: 'User registered successfully'})
   } catch (err) {

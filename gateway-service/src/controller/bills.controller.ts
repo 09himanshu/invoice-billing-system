@@ -5,6 +5,7 @@ import * as errors from '../utils/errors.utils'
 import {KafkaService} from '../class/kafka.class'
 import {generateOrderId} from '../helper/uniqueId.helper'
 import {env} from '../config/env.config'
+import {kafkaTopics} from '../utils/constants.utils'
 
 const kafka = KafkaService.getInstance()
 
@@ -13,7 +14,7 @@ export const userBill = async (req: Request, res: Response, next: NextFunction):
   if(!body) return next(new errors.BadRequest('Invalid request'))
 
   try {
-    const producer = await kafka.produceMessages()
+    const producer = await kafka.produceMessages(kafkaTopics.bill)
 
     await producer?.send({
       topic: env.topics,
