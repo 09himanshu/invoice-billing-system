@@ -131,9 +131,12 @@ class DB {
   public async insertMany({collection, document}: InsertMany): Promise<Document | null> {
     try {
       if(!collection || typeof collection !== 'string') return null
-      return await this.get_db_name()
-      .collection(collection)
-      .insertMany(document)
+      let result = await this.get_db_name().collection(collection).insertMany(document)
+      console.log(result)
+      return result
+      // return await this.get_db_name()
+      // .collection(collection)
+      // .insertMany(document)
     } catch (err) {
       console.log(err);
       return null

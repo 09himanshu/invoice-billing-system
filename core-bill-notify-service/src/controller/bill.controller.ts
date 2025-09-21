@@ -30,13 +30,13 @@ export const genBill = async (): Promise<void> => {
             let user: any = await redis.get(userId)
             if (!user) {
               
-              user = (await db).findOne({collection: tableNames.user, filter: {email: userId}, project: {}})
+              user = await (await db).findOne({collection: tableNames.user, filter: {email: userId}, project: {}})
             } else {
               user = JSON.parse(user)
             }
 
             console.log(user, userId)
-            return
+            
 
             const totalPrice = await helper.calculateTotalPrice(items)
             const gstAmount = (totalPrice * 18) / 100
@@ -186,16 +186,17 @@ export const genBill = async (): Promise<void> => {
               }
             }
 
-            // await producer?.send({
-            //   topic: kafkaTopics.notify,
-            //   messages: [
-            //     {
-            //       key: `email-${ele.key?.toString()}`,
-            //       value: JSON.stringify(notify),
-            //       partition: 2
-            //     }
-            //   ]
-            // })
+            const message = [
+              {
+                key: `email-${ele.key?.toString()}`,
+                value: JSON.stringify(notify),
+                partition: 2
+              }
+            ]
+
+            await kafka.sendMessage(kafkaTopics.notify, message)
+            
+            
           }
 
           resolveOffset(ele.offset)

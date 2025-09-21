@@ -1,11 +1,12 @@
 import { insertUser} from './controller/users.controller'
 import {genBill} from './controller/bill.controller'
-
+import {sendMail} from './controller/sendNotification.controller'
 
 async function bootstrap() {
   await Promise.all([
     insertUser(),
-    genBill()
+    genBill(),
+    sendMail()
   ])
 }
 

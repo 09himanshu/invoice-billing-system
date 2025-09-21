@@ -42,7 +42,11 @@ export class RedisService {
   }
 
   public async get(key: string): Promise<string | null> {
-    return await this.client.get(key);
+    let data = await this.client.get(key);
+    if(data == 'null' || data == null) return null
+    data = JSON.parse(data)
+    
+    return data
   }
 
   public async del(key: string): Promise<number> {

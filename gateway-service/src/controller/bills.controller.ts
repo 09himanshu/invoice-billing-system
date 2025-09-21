@@ -4,7 +4,6 @@ import {Request, Response, NextFunction} from 'express'
 import * as errors from '../utils/errors.utils'
 import {KafkaService} from '../class/kafka.class'
 import {generateOrderId} from '../helper/uniqueId.helper'
-import {env} from '../config/env.config'
 import {kafkaTopics} from '../utils/constants.utils'
 
 const kafka = KafkaService.getInstance()

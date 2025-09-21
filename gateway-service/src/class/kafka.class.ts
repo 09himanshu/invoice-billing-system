@@ -125,14 +125,9 @@ export class KafkaService {
         }
 
         try {
-            const formattedMessages = messages.map(msg => ({
-                value: typeof msg === 'string' ? msg : JSON.stringify(msg),
-                timestamp: Date.now().toString()
-            }));
-
             await this.producer.send({
                 topic,
-                messages: formattedMessages
+                messages: messages
             });
 
             console.log(`Messages sent to topic: ${topic}`);

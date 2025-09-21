@@ -19,20 +19,20 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
     let data: any = await redis.get(body.email)
 
     if(!data) {
-      data = (await db).findOne({collection: constants.tableNames.user, filter: {email: body.email}, project: {}})
+      data = await (await db).findOne({collection: constants.tableNames.user, filter: {email: body.email}, project: {}})
       console.log(data);
       
       await redis.set(body.email, JSON.stringify(data), 172800) // 2 days
       if(data) return next(new errors.BadRequest('User already registered'))
     } else {
-      console.log(data);
+      console.log(data, typeof data);
       return next(new errors.BadRequest('User already registered'))
     }
 
     const message = [
       {
         key: `userID-${body.email}`,
-        value: body,
+        value: JSON.stringify(body),
         partition: 0
       }
     ]
