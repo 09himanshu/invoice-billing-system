@@ -18,19 +18,16 @@ export const sendMail = async () => {
             if (/email-/.test(ele.key!.toString())) {
               let data = JSON.parse(ele.value!.toString())
 
-              console.log(data);
-
               const options = {
                 from: env.smtpFrom,
-                to: 'himanshusah610@gmail.com',
+                to: data.info.sendTo,
                 subject: 'Invoice',
                 html: await template(data.info),
                 document: data.filepath
               }
 
-              let info = await mailer.sendMail(options)
+              await mailer.sendMail(options)
 
-              console.log(info)
             }
 
             resolveOffset(ele.offset)

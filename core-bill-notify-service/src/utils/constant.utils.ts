@@ -121,5 +121,4 @@ export const kafkaKeys = {
   'userID': 'userID',
   'billID': 'billID',
   'notify': 'notify'
-
 }

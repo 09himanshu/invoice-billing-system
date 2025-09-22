@@ -240,6 +240,62 @@ services:
     volumes:
       - redisinsight:/data
 
+
+  service-1:
+    container_name: service-1
+    hostname: service-1
+    build: "./gateway-service"
+    restart: always
+    ports: 
+      - "5002:5002"
+    environment:
+      DB_URL: mongodb://root:rootpassword@localhost:27018/invoiceBill?authSource=admin
+      dbName: invoiceBill
+      PORT: 5002
+      HOST: 0.0.0.0
+      clientId: invoice
+      brokers: 192.168.1.9:9192,192.168.1.9:9193,192.168.1.9:9194,192.168.1.9:9195,192.168.1.9:9196
+      redisPort: 6379
+      redisUsername: redis
+      redisPassword: redis
+      redisHost: 0.0.0.0
+    depends_on:
+      - mongo
+      - redis
+      - broker-1
+      - broker-2
+      - broker-3
+      - broker-4
+      - broker-5
+
+  service-2:
+    container_name: service-2
+    hostname: service-2
+    build: "./core-bill-notify-service"
+    restart: always
+    environment:
+      DB_URL: mongodb://root:rootpassword@localhost:27018/invoiceBill?authSource=admin
+      dbName: invoiceBill
+      clientId: invoice
+      brokers: 192.168.1.9:9192,192.168.1.9:9193,192.168.1.9:9194,192.168.1.9:9195,192.168.1.9:9196
+      redisPort: 6379
+      redisUsername: redis
+      redisPassword: redis
+      redisHost: 0.0.0.0
+      smtpHost: smtp.sendgrid.net
+      smtpPort: 587
+      smtpUser: apikey
+      smtpPassword=: G.DTqqD94nQsmbSlYM9p6i-g.iRkYKa5D3gquDmc5ND2F8DxGXLLqwVVfDHtelchZkTg
+      smtpFrom: himanshu.sah@delostylestudio.com
+    depends_on:
+      - mongo
+      - redis
+      - broker-1
+      - broker-2
+      - broker-3
+      - broker-4
+      - broker-5
+
 volumes:
   mongo_data:
   controller-1-data:

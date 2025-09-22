@@ -7,6 +7,7 @@ import {db} from '../helper/db.helper'
 import {KafkaService} from '../class/kafka.class'
 import {RedisService} from '../class/redis.class'
 import {kafkaTopics} from '../utils/constants.utils'
+import {customerID} from '../helper/customerID.helper'
 
 const kafka = KafkaService.getInstance()
 const redis = RedisService.getInstance()
@@ -14,18 +15,16 @@ const redis = RedisService.getInstance()
 
 export const registerUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   let body = req.body
+  body.customerID = customerID.generateId().toString()
   try {
     
     let data: any = await redis.get(body.email)
 
     if(!data) {
       data = await (await db).findOne({collection: constants.tableNames.user, filter: {email: body.email}, project: {}})
-      console.log(data);
-      
       await redis.set(body.email, JSON.stringify(data), 172800) // 2 days
       if(data) return next(new errors.BadRequest('User already registered'))
     } else {
-      console.log(data, typeof data);
       return next(new errors.BadRequest('User already registered'))
     }
 

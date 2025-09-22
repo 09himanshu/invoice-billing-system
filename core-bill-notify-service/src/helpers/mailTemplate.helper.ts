@@ -55,18 +55,6 @@ export const template = async ({name, totalAmount, invoiceID, storeName}: notify
 						</td>
 					</tr>
 
-					<!-- Action -->
-					<tr>
-						<td style="padding:20px; text-align:center;">
-							<p style="margin:0 0 15px; font-size:14px; color:#555;">You can review the full invoice in
-								the attached PDF.</p>
-							<a href="#"
-								style="background:#3182ce; color:#ffffff; text-decoration:none; padding:10px 24px; border-radius:4px; font-size:14px; display:inline-block;">
-								Download Invoice
-							</a>
-						</td>
-					</tr>
-
 					<!-- Footer -->
 					<tr>
 						<td

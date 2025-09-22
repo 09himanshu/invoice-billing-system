@@ -19,7 +19,6 @@ const filepath = path.join(__dirname, '../../bills/')
 export const genBill = async (): Promise<void> => {
   const consumer = await kafka.getConsumer(kafkaGroupIDs.billing, kafkaTopics.bill)
   try {
-    consumer?.subscribe({ topic: kafkaTopics.bill, fromBeginning: true })
 
     await consumer?.run({
       eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
@@ -35,9 +34,6 @@ export const genBill = async (): Promise<void> => {
               user = JSON.parse(user)
             }
 
-            console.log(user, userId)
-            
-
             const totalPrice = await helper.calculateTotalPrice(items)
             const gstAmount = (totalPrice * 18) / 100
 
@@ -49,8 +45,7 @@ export const genBill = async (): Promise<void> => {
             if (user.lastname) fullName += user.lastname
             user.fullName = fullName
 
-            const storeinfo =
-              constant.storeAddresses[Math.floor(Math.random() * constant.storeAddresses.length)]
+            const storeinfo = constant.storeAddresses[Math.floor(Math.random() * constant.storeAddresses.length)]
 
             const doc = new pdfKit({ size: 'A4', margin: 50 })
             doc.pipe(fs.createWriteStream(`${filepath}${ele.key!.toString().split('-')[1]}.pdf`))
@@ -195,8 +190,6 @@ export const genBill = async (): Promise<void> => {
             ]
 
             await kafka.sendMessage(kafkaTopics.notify, message)
-            
-            
           }
 
           resolveOffset(ele.offset)

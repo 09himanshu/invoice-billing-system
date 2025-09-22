@@ -17,7 +17,6 @@ const envSchema = z.object({
   smtpUser: z.string(),
   smtpPassword: z.string(),
   smtpFrom: z.string(),
-  apiKey: z.string()
 })
 
 const parseEnv = envSchema.safeParse(process.env)
