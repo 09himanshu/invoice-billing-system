@@ -5,20 +5,26 @@ import pdfKit from 'pdfkit'
 // custom imports
 import * as helper from '../helpers/calculation.helper'
 import * as constant from '../utils/constant.utils'
-import {db} from '../helpers/db.helper'
+import { db } from '../helpers/db.helper'
 import { RedisService } from '../class/redis.class'
 import { KafkaService } from '../class/kafka.class'
 import { tableNames } from '../utils/constant.utils'
-import {kafkaTopics, kafkaGroupIDs} from '../utils/constant.utils'
+import { kafkaTopics, kafkaGroupIDs } from '../utils/constant.utils'
 
 const redis = RedisService.getInstance()
 const kafka = KafkaService.getInstance()
-const filepath = path.join(__dirname, '../../bills/')
+const filepath = path.join(__dirname, '../bills/')
 
 
 export const genBill = async (): Promise<void> => {
   const consumer = await kafka.getConsumer(kafkaGroupIDs.billing, kafkaTopics.bill)
   try {
+    if (!fs.existsSync(filepath)) {
+      fs.mkdirSync(filepath, { recursive: true });
+      console.log(`Created directory: ${filepath}`);
+    } else {
+      console.log(`Directory already exists: ${filepath}`);
+    }
 
     await consumer?.run({
       eachBatch: async ({ batch, resolveOffset, heartbeat }) => {
@@ -28,8 +34,8 @@ export const genBill = async (): Promise<void> => {
 
             let user: any = await redis.get(userId)
             if (!user) {
-              
-              user = await (await db).findOne({collection: tableNames.user, filter: {email: userId}, project: {}})
+
+              user = await (await db).findOne({ collection: tableNames.user, filter: { email: userId }, project: {} })
             } else {
               user = JSON.parse(user)
             }
@@ -37,7 +43,7 @@ export const genBill = async (): Promise<void> => {
             const totalPrice = await helper.calculateTotalPrice(items)
             const gstAmount = (totalPrice * 18) / 100
 
-            if(!Object.keys(user).length) return
+            if (!Object.keys(user).length) return
 
             let fullName = ''
             if (user.firstname) fullName += user.firstname + ' '
@@ -167,7 +173,7 @@ export const genBill = async (): Promise<void> => {
             drawSummaryRow('Tax (GST):', gstAmount.toFixed(2), summaryY)
             summaryY += 20
             drawSummaryRow('Grand Total:', (totalPrice + gstAmount).toFixed(2), summaryY, '#2E86C1', true)
-            
+
             doc.end()
 
             const notify: object = {

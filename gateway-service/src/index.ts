@@ -19,6 +19,7 @@ const kafka = KafkaService.getInstance();
 
 (async (): Promise<void> => {
   const app = express();
+  console.log(env)
   try {
     // Middlewares
     app.use(express.json());

@@ -9,8 +9,6 @@ const envSchema = z.object({
   clientId: z.string(),
   brokers: z.string(),
   redisPort: z.string(),
-  redisUsername: z.string(),
-  redisPassword: z.string(),
   redisHost: z.string(),
   smtpHost: z.string(),
   smtpPort: z.string(),

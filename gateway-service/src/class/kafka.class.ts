@@ -61,6 +61,18 @@ export class KafkaService {
     public async createTopics(topics: string[]): Promise<void> {
         const admin = await this.getAdmin();
         this.isTopics = topics
+
+        const retry = async (fn: () => Promise<any>, retries = 3, delay = 2000) => {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    return await fn();
+                } catch (err) {
+                    if (i === retries - 1) throw err;
+                    console.warn(`Retry ${i + 1}/${retries} failed, retrying in ${delay}ms...`);
+                    await new Promise((r) => setTimeout(r, delay));
+                }
+            }
+        };
         try {
             const listTopics = await admin.listTopics();
             const newTopics = topics.filter((t) => !listTopics.includes(t));
@@ -73,14 +85,25 @@ export class KafkaService {
                 return;
             }
 
-            await admin.createTopics({
-                waitForLeaders: true,
-                topics: newTopics.map((topic) => ({
-                    topic,
-                    numPartitions: 3,
-                    replicationFactor: 5, // adjust based on cluster
-                })),
-            });
+            // await admin.createTopics({
+            //     waitForLeaders: true,
+            //     topics: newTopics.map((topic) => ({
+            //         topic,
+            //         numPartitions: 3,
+            //         replicationFactor: 5, // adjust based on cluster
+            //     })),
+            // });
+
+            await retry(() =>
+                admin.createTopics({
+                    waitForLeaders: true,
+                    topics: newTopics.map((topic) => ({
+                        topic,
+                        numPartitions: 3,
+                        replicationFactor: 3, // adjust as per your brokers
+                    })),
+                })
+            );
 
             console.log(`Topics created: ${newTopics.join(", ")}`);
 
@@ -112,8 +135,7 @@ export class KafkaService {
         }
 
         throw new Error(
-            `Timeout: leaders not elected for topic ${topic} within ${timeout / 1000
-            }s`
+            `Timeout: leaders not elected for topic ${topic} within ${timeout / 1000}s`
         );
     }
 
@@ -137,17 +159,17 @@ export class KafkaService {
         }
     }
 
-    public async getConsumer(groupId:  string, topics: string): Promise<Consumer | undefined> {
+    public async getConsumer(groupId: string, topics: string): Promise<Consumer | undefined> {
         try {
             const consumerKey = groupId;
-            if(this.consumers.has(consumerKey)) {
+            if (this.consumers.has(consumerKey)) {
                 return this.consumers.get(consumerKey)
             }
 
             const admin = await this.getAdmin();
             await Promise.all(this.isTopics.map(topic => this.waitForLeaders(admin, topic)));
 
-            const consumer = this.kafka.consumer({ 
+            const consumer = this.kafka.consumer({
                 groupId,
                 sessionTimeout: 30000,
                 rebalanceTimeout: 60000,

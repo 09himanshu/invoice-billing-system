@@ -58,6 +58,7 @@ export class KafkaService {
         console.log("Global producer connected");
     }
 
+    /*
     public async createTopics(topics: string[]): Promise<void> {
         const admin = await this.getAdmin();
         this.isTopics = topics
@@ -92,6 +93,7 @@ export class KafkaService {
             console.error("Error creating topics:", err);
         }
     }
+    */
 
     private async waitForLeaders(admin: Admin, topic: string): Promise<void> {
         const timeout = 30000;
@@ -112,8 +114,7 @@ export class KafkaService {
         }
 
         throw new Error(
-            `Timeout: leaders not elected for topic ${topic} within ${timeout / 1000
-            }s`
+            `Timeout: leaders not elected for topic ${topic} within ${timeout / 1000}s`
         );
     }
 

@@ -1,4 +1,5 @@
 node_modules/
+bills/
 .env
 .env.example
 .dockerignore
