@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -euo
 
 registry="$1"
 projectName="$2"
