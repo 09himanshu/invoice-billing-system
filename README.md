@@ -92,11 +92,11 @@ Make sure you have installed:
    ```
 2. Start dependencies and services:
     ```bash
-    docker compose up -d
+    sh start.sh
     ```
 3. Verify services are running:
   ```bash
-    docker compose ps
+    docker ps
   ```
 
 4. API Endpoints
@@ -161,7 +161,7 @@ Each service requires environment variables. Please review the .env.example file
 ## Run the application using Docker Compose only
 Make sure you made changes accordingly in the docker-compose.yml file, the environments sections of each service
 ```bash
-docker compose up -d
+sh start.sh
 ```
 
 ## Kubernetes Deployment
