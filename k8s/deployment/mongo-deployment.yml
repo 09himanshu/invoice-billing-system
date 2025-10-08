@@ -19,15 +19,8 @@ spec:
           image: mongo:latest
           ports:
             - containerPort: 27017
-          volumeMounts:
-            - name: mongo-storage
-              mountPath: /data/db
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               value: "root"
             - name: MONGO_INITDB_ROOT_PASSWORD
               value: "rootpassword"
-      volumes:
-        - name: mongo-storage
-          persistentVolumeClaim:
-            claimName: mongo-pvc
